@@ -55,9 +55,10 @@ def LoadTransSave (filePath, features, labels, size, seed):
     mini_df,_features = loadNdownsize(filePath,features, labels,size=size,seed=seed)
     saveAsH5(filePath, df = mini_df, size=size, features=_features, labels=labels)
 
-filePath = './data/'
-features = ['index','j1_pt','j1_eta','j1_phi','j_mass','j_multiplicity','j1_etarot','j1_phirot','j_pt','j1_etarel','j1_phirel','j_index']
-labels = ['j_g','j_q','j_w','j_z','j_t']
-size=20
-seed=42
-LoadTransSave(filePath,features, labels,size=size,seed=seed)
+# To test:
+# filePath = './data/'
+# features = ['index','j1_pt','j1_eta','j1_phi','j_mass','j_multiplicity','j1_etarot','j1_phirot','j_pt','j1_etarel','j1_phirel','j_index']
+# labels = ['j_g','j_q','j_w','j_z','j_t']
+# size=20
+# seed=42
+# LoadTransSave(filePath,features, labels,size=size,seed=seed)
