@@ -3,6 +3,7 @@ import h5py
 import pandas as pd
 import os
 import itertools
+from tqdm import tqdm
 
 def downsize(df,size,seed,labels):
     jet_dict = {}
@@ -51,7 +52,11 @@ def saveAsH5(filePath,df, size,features,labels,ratio=None):
     feats.remove('j_index')
     
     # Since list is not valid in Dataframe, create a nparray to store the label list
-    label_list = np.vstack([df[label] for label in labels]).T
+    if ratio==None:
+        label_list = np.vstack([df[label] for label in labels]).T
+    else:
+        target = labels[ratio.index(1)]
+        label_list = np.vstack([df[target], np.abs(df[target]-1)]).T
     
     if ratio==None:
         savePath = filePath+"data_%sjets_%dlabels"%(size,len(labels))+'.h5'
