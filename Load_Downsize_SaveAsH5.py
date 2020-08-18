@@ -48,10 +48,7 @@ def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
     return mini_df, _features
 
 def saveAsH5(filePath,df, size,features,labels,ratio=None):
-    feats = features
-    feats.remove('j_index')
-    
-    # Since list is not valid in Dataframe, create a nparray to store the label list
+# Since list is not valid in Dataframe, create a nparray to store the label list
     if ratio==None:
         label_list = np.vstack([df[label] for label in labels]).T
     else:
@@ -74,7 +71,7 @@ def saveAsH5(filePath,df, size,features,labels,ratio=None):
 #                 f.create_dataset(col, data=df[col])
 #             f.create_dataset('label', data = label_list)
     with h5py.File(savePath, 'w') as f:
-            for col in feats:
+            for col in features:
                 f.create_dataset(col, data=df[col])
             f.create_dataset('label', data = label_list)
 
