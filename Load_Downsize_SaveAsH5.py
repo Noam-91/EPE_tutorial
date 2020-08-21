@@ -64,6 +64,7 @@ def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
         mini_df = downsize_unbalanced(df,size,seed,labels,ratio=ratio)
     # Sort constituents by pt in each jet
     df_sort = pd.DataFrame()
+    cIndex = np.array([],dtype='int8')
     for i in tqdm(np.unique(mini_df['j_index'])):
         df_sort = pd.concat([df_sort,mini_df[mini_df['j_index']==i].sort_values(by=['j1_ptrel'],ascending=False)],axis=0)
         new_cIndex = np.arange(mini_df[mini_df['j_index']==i].shape[0])
