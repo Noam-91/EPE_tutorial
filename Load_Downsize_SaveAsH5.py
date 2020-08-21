@@ -26,28 +26,6 @@ def downsize_unbalanced(df,max_size,seed,labels,ratio):
         mini_df = pd.concat([mini_df,df[df.j_index.isin(jet_dict[label])]],axis=0)
     return mini_df
 
-# def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
-#     '''
-#     features: 'j_index' is necessary!
-#     '''
-#     with h5py.File(filePath+"processed-pythia82-lhc13-all-pt1-50k-r1_h022_e0175_t220_nonu_withPars_truth_0.z", 'r') as f:
-#         treeArray = f['t_allpar_new'][()]
-#     df = pd.DataFrame(treeArray, columns=features+labels) 
-#     if ratio==None:
-#         mini_df = downsize(df,size,seed,labels)
-#     else:
-#         mini_df = downsize_unbalanced(df,size,seed,labels,ratio=ratio)
-#     # Sort constituents by pt in each jet
-#     df_sort = pd.DataFrame()
-#     cIndex = np.array([],dtype='int8')
-#     for i in tqdm(np.unique(mini_df['j_index'])):
-#         df_sort = pd.concat([df_sort,mini_df[mini_df['j_index']==i].sort_values(by=['j1_ptrel'],ascending=False)],axis=0)
-#         new_cIndex = np.arange(mini_df[mini_df['j_index']==i].shape[0])
-#         cIndex = np.append(cIndex, new_cIndex)
-#     df_sort['constituents_index'] = cIndex
-#     _features = features+['constituents_index']
-#     return df_sort, _features
-
 def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
     '''
     features: 'j_index' is necessary!
@@ -60,15 +38,37 @@ def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
     else:
         mini_df = downsize_unbalanced(df,size,seed,labels,ratio=ratio)
     # Sort constituents by pt in each jet
-    mini_df.sort_values(by=['j1_ptrel'],ascending=False,inplace=True)
-    # Add new feature "constituents_index"
+    df_sort = pd.DataFrame()
     cIndex = np.array([],dtype='int8')
+    df_sort = mini_df.sort_values(by=['j1_ptrel'],ascending=False)
     for i in tqdm(np.unique(mini_df['j_index'])):
         new_cIndex = np.arange(mini_df[mini_df['j_index']==i].shape[0])
         cIndex = np.append(cIndex, new_cIndex)
-    mini_df['constituents_index'] = cIndex
+    df_sort['constituents_index'] = cIndex
     _features = features+['constituents_index']
-    return mini_df, _features
+    return df_sort, _features
+
+# def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
+#     '''
+#     features: 'j_index' is necessary!
+#     '''
+#     with h5py.File(filePath+"processed-pythia82-lhc13-all-pt1-50k-r1_h022_e0175_t220_nonu_withPars_truth_0.z", 'r') as f:
+#         treeArray = f['t_allpar_new'][()]
+#     df = pd.DataFrame(treeArray, columns=features+labels) 
+#     if ratio==None:
+#         mini_df = downsize(df,size,seed,labels)
+#     else:
+#         mini_df = downsize_unbalanced(df,size,seed,labels,ratio=ratio)
+#     # Sort constituents by pt in each jet
+#     mini_df.sort_values(by=['j1_ptrel'],ascending=False,inplace=True)
+#     # Add new feature "constituents_index"
+#     cIndex = np.array([],dtype='int8')
+#     for i in tqdm(np.unique(mini_df['j_index'])):
+#         new_cIndex = np.arange(mini_df[mini_df['j_index']==i].shape[0])
+#         cIndex = np.append(cIndex, new_cIndex)
+#     mini_df['constituents_index'] = cIndex
+#     _features = features+['constituents_index']
+#     return mini_df, _features
 
 def saveAsH5(filePath,df, size,features,labels,ratio=None):
 # Since list is not valid in Dataframe, create a nparray to store the label list
