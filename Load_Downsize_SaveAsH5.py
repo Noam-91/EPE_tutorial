@@ -28,7 +28,7 @@ def downsize_unbalanced(df,max_size,seed,labels,ratio):
 
 def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
     '''
-    features: 'j_index' is necessary!
+    features: 'j_index' and 'j1_pt' are necessary!
     '''
     with h5py.File(filePath+"processed-pythia82-lhc13-all-pt1-50k-r1_h022_e0175_t220_nonu_withPars_truth_0.z", 'r') as f:
         treeArray = f['t_allpar_new'][()]
@@ -37,15 +37,19 @@ def loadNdownsize (filePath,features,labels,size,seed,ratio=None):
         mini_df = downsize(df,size,seed,labels)
     else:
         mini_df = downsize_unbalanced(df,size,seed,labels,ratio=ratio)
+    # Sort constituents by pt in each jet
+    df_sort = pd.DataFrame()
+    for i in np.unique(mini_df['j_index']):
+        df_sort = pd.concat([df_sort,mini_df[mini_df['j_index']==i].sort_values(by=['j1_pt'],ascending=False)],axis=0)
     # Add constituents_index
-    x = [len(list(y)) for _,y in itertools.groupby(mini_df['j_index'])]
-    j_cIndex = np.array([],dtype='int8')
+    x = [len(list(y)) for _,y in itertools.groupby(df_sort['j_index'])]
+    j1_cIndex = np.array([],dtype='int8')
     for i in x:
         new_jet_index = np.arange(i)
-        j_cIndex = np.append(j_cIndex, new_jet_index)
-    mini_df['constituents_index'] = j_cIndex
+        j1_cIndex = np.append(j1_cIndex, new_jet_index)
+    df_sort['constituents_index'] = j1_cIndex
     _features = features+['constituents_index']
-    return mini_df, _features
+    return df_sort, _features
 
 def saveAsH5(filePath,df, size,features,labels,ratio=None):
 # Since list is not valid in Dataframe, create a nparray to store the label list
@@ -76,7 +80,7 @@ def saveAsH5(filePath,df, size,features,labels,ratio=None):
             f.create_dataset('label', data = label_list)
 
 def LoadTransSave (filePath, features, labels, size, seed,ratio=None):
-    mini_df,_features = loadNdownsize(filePath,features, labels,size=size,seed=seed,ratio=ratio)
+    mini_df, _features = loadNdownsize(filePath,features, labels,size=size,seed=seed,ratio=ratio)
     saveAsH5(filePath, df = mini_df, size=size, features=_features, labels=labels,ratio=ratio)
 
 # # To test:
