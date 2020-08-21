@@ -79,9 +79,9 @@ def saveAsH5(filePath,df, size,features,labels,ratio=None):
         label_list = np.vstack([df[target], np.abs(df[target]-1)]).T
     
     if ratio==None:
-        savePath = filePath+"data_%sjets_%dlabels"%(size,len(labels))+'.h5'
+        savePath = filePath+"data_%sjets_%dlabels"%(size*5,len(labels))+'.h5'
     else:
-        savePath = filePath+"data_%sjets_%dlabels_unbalanced"%(size,len(labels))+'.h5'
+        savePath = filePath+"data_%sjets_%dlabels_unbalanced"%(size*np.sum(ratio),len(labels))+'.h5'
         
 #     if os.path.exists(savePath):
 #         with h5py.File(savePath, 'r+') as f:
